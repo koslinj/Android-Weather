@@ -2,59 +2,47 @@ package koslin.jan.weather.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import koslin.jan.weather.R
+import koslin.jan.weather.WeatherUiState
+import koslin.jan.weather.WeatherViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class TodayFragment : Fragment(R.layout.fragment_today) {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [TodayFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class TodayFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var todayMainTv: TextView
+    private lateinit var weatherViewModel: WeatherViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize the TextView
+        todayMainTv = view.findViewById(R.id.todayMainTv)
+
+        // Obtain a reference to the ViewModel
+        weatherViewModel = ViewModelProvider(requireActivity(), WeatherViewModel.Factory)
+            .get(WeatherViewModel::class.java)
+
+        // Observe the LiveData for UI updates
+        weatherViewModel.uiState.observe(viewLifecycleOwner) { uiState ->
+            handleUiState(uiState)
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_today, container, false)
+    private fun handleUiState(uiState: WeatherUiState) {
+        when (uiState) {
+            is WeatherUiState.Success -> {
+                todayMainTv.text = uiState.hourlyTime[0]
+            }
+            WeatherUiState.Loading -> {
+                todayMainTv.text = "LOADING..."
+            }
+            WeatherUiState.Error -> {
+                // Show error UI
+                // (Optional: You can show an error message or perform other UI changes)
+            }
+        }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment TodayFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            TodayFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }

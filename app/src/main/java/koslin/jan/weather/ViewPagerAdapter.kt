@@ -8,16 +8,15 @@ import koslin.jan.weather.fragments.TodayFragment
 import koslin.jan.weather.fragments.WeekFragment
 
 class ViewPagerAdapter(fragmentActivity: FragmentActivity): FragmentStateAdapter(fragmentActivity) {
+    // Store references to your fragments
+    var fragments: List<Fragment> = listOf(SettingsFragment(), TodayFragment(), WeekFragment())
+        private set
+
     override fun getItemCount(): Int {
-        return 3
+        return fragments.size
     }
 
     override fun createFragment(position: Int): Fragment {
-        when(position){
-            0 -> return SettingsFragment()
-            1 -> return TodayFragment()
-            2 -> return WeekFragment()
-            else -> return TodayFragment()
-        }
+        return fragments[position]
     }
 }
