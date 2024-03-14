@@ -41,6 +41,10 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
 
         weatherViewModel.uiState.observe(viewLifecycleOwner) { uiState ->
             handleUiState(uiState)
+
+            if (uiState is WeatherUiState.Success) {
+                todayMainTv.text = weatherViewModel.getCurrentCity()
+            }
         }
 
         searchButton.setOnClickListener {
@@ -61,7 +65,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
             val latitude = addresses[0].latitude
             val longitude = addresses[0].longitude
             val city = addresses[0].locality
-            todayMainTv.text = city
+            weatherViewModel.updateCurrentCity(city)
             // Call the API with the obtained latitude and longitude
             weatherViewModel.getWeatherData(latitude, longitude)
         } else {

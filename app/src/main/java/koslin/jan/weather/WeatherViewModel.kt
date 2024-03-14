@@ -37,6 +37,8 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
     val uiState: LiveData<WeatherUiState>
         get() = _uiState
 
+    private var currentCity: String = "Warszawa"
+
     fun getWeatherData(lat: Double, long: Double) {
         viewModelScope.launch {
             try {
@@ -72,7 +74,18 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
     }
 
     init {
+        // You can provide default values for latitude, longitude, and city
         getWeatherData(52.2298, 21.0118)
+    }
+
+    // You can add a public function to update the city externally
+    fun updateCurrentCity(city: String) {
+        currentCity = city
+    }
+
+    // Add getter method for the current city
+    fun getCurrentCity(): String {
+        return currentCity
     }
 
     companion object {
@@ -85,3 +98,4 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 }
+
