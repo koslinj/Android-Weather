@@ -28,6 +28,7 @@
                     android:text="Miasto domyślne"
                     android:textAlignment="center"
                     android:textSize="28sp"
+                    android:layout_marginBottom="10dp"
                     android:textStyle="bold" />
 
                 <LinearLayout

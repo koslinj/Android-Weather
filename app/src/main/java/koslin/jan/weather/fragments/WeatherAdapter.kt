@@ -20,6 +20,7 @@ class WeatherAdapter(
         val temperatureTextView: TextView = itemView.findViewById(R.id.temperatureTextView)
         val rainTextView: TextView = itemView.findViewById(R.id.rainTextView)
         val weatherIconImageView: ImageView = itemView.findViewById(R.id.weatherIconImageView)
+        val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
     }
 
     fun updateData(newTime: List<String>, newTemperature: List<Double>, newRain: List<Double>) {
@@ -39,7 +40,16 @@ class WeatherAdapter(
 
     override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
         // Bind the data to the views in each item
-        holder.timeTextView.text = time[position]
+        val len = time[position].length
+        val onlyHour = time[position].subSequence(len - 5, len)
+        holder.timeTextView.text = onlyHour
+
+        if (onlyHour == "00:00" || position == 0) {
+            holder.dateTextView.text = time[position].subSequence(0, len - 6)
+            holder.dateTextView.visibility = View.VISIBLE
+        } else {
+            holder.dateTextView.visibility = View.GONE
+        }
 
         // Format temperature and rain values
         val formattedTemperature = String.format("%.1f°C", temperature[position])
