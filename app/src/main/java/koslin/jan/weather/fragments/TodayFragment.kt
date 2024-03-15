@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import koslin.jan.weather.R
 import koslin.jan.weather.WeatherUiState
 import koslin.jan.weather.WeatherViewModel
+import koslin.jan.weather.data.LocationData
 
 class TodayFragment : Fragment(R.layout.fragment_today) {
 
@@ -65,9 +66,9 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
             val latitude = addresses[0].latitude
             val longitude = addresses[0].longitude
             val city = addresses[0].locality
-            weatherViewModel.updateCurrentCity(city)
+            weatherViewModel.updateLocationData(LocationData(latitude, longitude, city), false)
             // Call the API with the obtained latitude and longitude
-            weatherViewModel.getWeatherData(latitude, longitude)
+            weatherViewModel.getWeatherData()
         } else {
             // Handle no results or error
         }
