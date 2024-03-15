@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="temperature_unit_entries">
+        <item>Stopnie Celsjusza °C</item>
+        <item>Stopnie Fahrenheita °F</item>
+    </string-array>
+</resources>

@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Pogoda</string>
     <string name="loading">Szukam...</string>
+
+    <!-- Preference Titles -->
+    <string name="units_header">Jednostki</string>
+
+    <!-- Messages Preferences -->
+    <string name="temperature_unit_title">Temperatura</string>
+    <string name="wind_unit_title">Prędkość wiatru</string>
 </resources>
