@@ -1,6 +1,9 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/units_header">
+    <PreferenceCategory
+        app:title="@string/units_header"
+        app:allowDividerBelow="true"
+        app:allowDividerAbove="true">
 
         <!--        <EditTextPreference-->
         <!--            app:key="signature"-->
@@ -13,7 +16,8 @@
             app:entryValues="@array/temperature_unit_values"
             app:key="temperature_unit"
             app:title="@string/temperature_unit_title"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true"
+            app:icon="@drawable/temperature_icon"/>
 
         <ListPreference
             app:defaultValue="kmh"
@@ -21,7 +25,8 @@
             app:entryValues="@array/wind_unit_values"
             app:key="wind_unit"
             app:title="@string/wind_unit_title"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true"
+            app:icon="@drawable/wind_icon"/>
 
     </PreferenceCategory>
 
