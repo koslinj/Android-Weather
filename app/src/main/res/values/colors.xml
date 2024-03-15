@@ -6,4 +6,6 @@
     <color name="orange_dark">#FFB300</color>
     <color name="top_bar_light">#D1C4E9</color>
     <color name="top_bar_dark">#000000</color>
+    <color name="blue_bg_light">#B8E3FF</color>
+    <color name="blue_bg_dark">#00375A</color>
 </resources>
