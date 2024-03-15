@@ -1,0 +1,43 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/units_header">
+
+        <!--        <EditTextPreference-->
+        <!--            app:key="signature"-->
+        <!--            app:title="@string/signature_title"-->
+        <!--            app:useSimpleSummaryProvider="true" />-->
+
+        <ListPreference
+            app:defaultValue="celsius"
+            app:entries="@array/temperature_unit_entries"
+            app:entryValues="@array/temperature_unit_values"
+            app:key="temperature_unit"
+            app:title="@string/temperature_unit_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="kmh"
+            app:entries="@array/wind_unit_entries"
+            app:entryValues="@array/wind_unit_values"
+            app:key="wind_unit"
+            app:title="@string/wind_unit_title"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+<!--    <PreferenceCategory app:title="@string/sync_header">-->
+
+    <!--        <SwitchPreferenceCompat-->
+    <!--            app:key="sync"-->
+    <!--            app:title="@string/sync_title" />-->
+
+    <!--        <SwitchPreferenceCompat-->
+    <!--            app:dependency="sync"-->
+    <!--            app:key="attachment"-->
+    <!--            app:summaryOff="@string/attachment_summary_off"-->
+    <!--            app:summaryOn="@string/attachment_summary_on"-->
+    <!--            app:title="@string/attachment_title" />-->
+
+    <!--    </PreferenceCategory>-->
+
+</PreferenceScreen>

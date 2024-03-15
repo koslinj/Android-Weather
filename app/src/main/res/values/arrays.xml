@@ -1,0 +1,24 @@
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="temperature_unit_entries">
+        <item>Celsius °C</item>
+        <item>Fahrenheit °F</item>
+    </string-array>
+
+    <string-array name="temperature_unit_values">
+        <item>celsius</item>
+        <item>fahrenheit</item>
+    </string-array>
+
+    <string-array name="wind_unit_entries">
+        <item>Km/h</item>
+        <item>m/s</item>
+        <item>Mph</item>
+    </string-array>
+
+    <string-array name="wind_unit_values">
+        <item>kmh</item>
+        <item>ms</item>
+        <item>mph</item>
+    </string-array>
+</resources>

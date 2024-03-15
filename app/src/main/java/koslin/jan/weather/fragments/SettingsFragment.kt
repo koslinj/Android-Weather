@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import koslin.jan.weather.R
 import koslin.jan.weather.WeatherViewModel
@@ -42,6 +43,14 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             val defaultCity = defaultCityEditText.text.toString()
             handleSearch(defaultCity)
         }
+
+        val preferencesFragmentContainer = view.findViewById<FragmentContainerView>(R.id.preferencesFragmentContainer)
+
+        // Create and add the PreferencesFragment
+        val preferencesFragment = PreferencesFragment()
+        childFragmentManager.beginTransaction()
+            .replace(preferencesFragmentContainer.id, preferencesFragment)
+            .commit()
     }
 
     private fun handleSearch(cityName: String) {

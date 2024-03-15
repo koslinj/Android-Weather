@@ -36,6 +36,8 @@ android {
 }
 
 dependencies {
+    implementation("androidx.preference:preference-ktx:1.2.1")
+
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
