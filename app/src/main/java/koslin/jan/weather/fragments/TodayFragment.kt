@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
     private lateinit var todayMainTv: TextView
     private lateinit var cityNameEditText: EditText
     private lateinit var searchButton: Button
+    private lateinit var loadingProgressBar: ProgressBar
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: WeatherAdapter
@@ -31,6 +33,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         todayMainTv = view.findViewById(R.id.todayMainTv)
         cityNameEditText = view.findViewById(R.id.editTextCityName)
         searchButton = view.findViewById(R.id.buttonSearch)
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBar)
 
         recyclerView = view.findViewById(R.id.weatherRecyclerView)
         adapter = WeatherAdapter(emptyList(), emptyList(), emptyList())
@@ -42,10 +45,6 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
 
         weatherViewModel.uiState.observe(viewLifecycleOwner) { uiState ->
             handleUiState(uiState)
-
-            if (uiState is WeatherUiState.Success) {
-                todayMainTv.text = weatherViewModel.getCurrentCity()
-            }
         }
 
         searchButton.setOnClickListener {
@@ -83,12 +82,18 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
 
                 // Now you can use this data to update your UI
                 updateUI(time, temperature, rain)
+                todayMainTv.text = weatherViewModel.getCurrentCity()
+                loadingProgressBar.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
             }
             WeatherUiState.Loading -> {
-
+                todayMainTv.text = getString(R.string.loading)
+                loadingProgressBar.visibility = View.VISIBLE
+                recyclerView.visibility = View.GONE
             }
             WeatherUiState.Error -> {
-
+                loadingProgressBar.visibility = View.GONE
+                recyclerView.visibility = View.GONE
             }
         }
     }

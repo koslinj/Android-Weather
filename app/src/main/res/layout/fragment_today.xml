@@ -25,7 +25,7 @@
                     android:id="@+id/todayMainTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Miasto domyślne"
+                    android:text="Miasto początkowe"
                     android:textAlignment="center"
                     android:textSize="28sp"
                     android:layout_marginBottom="10dp"
@@ -55,6 +55,13 @@
             </LinearLayout>
         </Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+
+    <ProgressBar
+        android:id="@+id/loadingProgressBar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/weatherRecyclerView"

@@ -60,6 +60,9 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
+                    withContext(Dispatchers.Main) {
+                        _uiState.value = WeatherUiState.Loading
+                    }
                     // Perform network request here
                     val res = repository.getWeather(locationData.latitude, locationData.longitude)
                     val currentDateTime = Date()
