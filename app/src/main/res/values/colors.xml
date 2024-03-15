@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="orange_light">#FF6F00</color>
     <color name="orange_dark">#FFB300</color>
+    <color name="top_bar_light">#D1C4E9</color>
+    <color name="top_bar_dark">#000000</color>
 </resources>
