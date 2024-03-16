@@ -6,21 +6,19 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import koslin.jan.weather.config.SharedPreferencesKeys
+import androidx.preference.PreferenceManager
+import koslin.jan.weather.config.Keys
 import koslin.jan.weather.data.LocationData
 import koslin.jan.weather.data.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
@@ -42,18 +40,24 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
     val uiState: LiveData<WeatherUiState>
         get() = _uiState
 
-    private val sharedPreferences = application.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+    private val customPreferences = application.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+    val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(application)
     private var locationData: LocationData = getLocationDataFromPreferences()
+    private var temperatureUnit: String = getTemperatureUnitPreference()
 
     private val _defaultCity = MutableLiveData<String>()
     val defaultCity: LiveData<String>
         get() = _defaultCity
 
     private fun getLocationDataFromPreferences(): LocationData {
-        val defaultLatitude = sharedPreferences.getFloat(SharedPreferencesKeys.LATITUDE_KEY, 52.2298f).toDouble()
-        val defaultLongitude = sharedPreferences.getFloat(SharedPreferencesKeys.LONGITUDE_KEY, 21.0118f).toDouble()
-        val defaultCity = sharedPreferences.getString(SharedPreferencesKeys.DEFAULT_CITY_KEY, "DefaultCity")
+        val defaultLatitude = customPreferences.getFloat(Keys.LATITUDE_KEY, 52.2298f).toDouble()
+        val defaultLongitude = customPreferences.getFloat(Keys.LONGITUDE_KEY, 21.0118f).toDouble()
+        val defaultCity = customPreferences.getString(Keys.DEFAULT_CITY_KEY, "Warszawa")
         return LocationData(defaultLatitude, defaultLongitude, defaultCity!!)
+    }
+
+    private fun getTemperatureUnitPreference(): String {
+        return defaultPreferences.getString(Keys.TEMPERATURE_UNIT_KEY, "celsiusDefault") ?: "celsius"
     }
 
     fun getWeatherData() {
@@ -64,7 +68,7 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
                         _uiState.value = WeatherUiState.Loading
                     }
                     // Perform network request here
-                    val res = repository.getWeather(locationData.latitude, locationData.longitude)
+                    val res = repository.getWeather(locationData.latitude, locationData.longitude, temperatureUnit)
                     val currentDateTime = Date()
                     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
                     val currentHour = dateFormat.format(currentDateTime)
@@ -108,11 +112,15 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
         }
     }
 
+    fun updateTemperatureUnit() {
+        this.temperatureUnit = getTemperatureUnitPreference()
+    }
+
     private fun saveLocationDataToPreferences(locationData: LocationData) {
-        val editor = sharedPreferences.edit()
-        editor.putFloat(SharedPreferencesKeys.LATITUDE_KEY, locationData.latitude.toFloat())
-        editor.putFloat(SharedPreferencesKeys.LONGITUDE_KEY, locationData.longitude.toFloat())
-        editor.putString(SharedPreferencesKeys.DEFAULT_CITY_KEY, locationData.cityName)
+        val editor = customPreferences.edit()
+        editor.putFloat(Keys.LATITUDE_KEY, locationData.latitude.toFloat())
+        editor.putFloat(Keys.LONGITUDE_KEY, locationData.longitude.toFloat())
+        editor.putString(Keys.DEFAULT_CITY_KEY, locationData.cityName)
         editor.apply()
     }
 

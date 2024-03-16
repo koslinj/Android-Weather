@@ -1,12 +1,9 @@
 package koslin.jan.weather.fragments
 
-import android.content.Context
 import android.location.Geocoder
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -15,7 +12,6 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import koslin.jan.weather.R
 import koslin.jan.weather.WeatherViewModel
-import koslin.jan.weather.config.SharedPreferencesKeys
 import koslin.jan.weather.data.LocationData
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
