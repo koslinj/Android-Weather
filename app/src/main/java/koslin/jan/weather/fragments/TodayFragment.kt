@@ -36,7 +36,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         loadingProgressBar = view.findViewById(R.id.loadingProgressBar)
 
         recyclerView = view.findViewById(R.id.weatherRecyclerView)
-        adapter = WeatherAdapter(emptyList(), emptyList(), emptyList())
+        adapter = WeatherAdapter(emptyList(), emptyList(), emptyList(), "")
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -79,9 +79,10 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
                 val time = uiState.time
                 val temperature = uiState.temperature
                 val rain = uiState.rain
+                val temperatureUnit = uiState.temperatureUnit
 
                 // Now you can use this data to update your UI
-                updateUI(time, temperature, rain)
+                updateUI(time, temperature, rain, temperatureUnit)
                 todayMainTv.text = weatherViewModel.getCurrentCity()
                 loadingProgressBar.visibility = View.GONE
                 recyclerView.visibility = View.VISIBLE
@@ -98,7 +99,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         }
     }
 
-    private fun updateUI(time: List<String>, temperature: List<Double>, rain: List<Double>) {
-        adapter.updateData(time, temperature, rain)
+    private fun updateUI(time: List<String>, temperature: List<Double>, rain: List<Double>, temperatureUnit: String) {
+        adapter.updateData(time, temperature, rain, temperatureUnit)
     }
 }

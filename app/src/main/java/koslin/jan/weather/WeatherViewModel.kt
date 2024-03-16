@@ -27,7 +27,8 @@ sealed interface WeatherUiState {
     data class Success(
         val time: List<String>,
         val temperature: List<Double>,
-        val rain: List<Double>
+        val rain: List<Double>,
+        val temperatureUnit: String
     ) : WeatherUiState
 
     object Loading : WeatherUiState
@@ -87,7 +88,7 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
                     val slicedTemperature = res.weatherData.temperature.subList(startIndex, endIndex)
                     val slicedRain = res.weatherData.rain.subList(startIndex, endIndex)
                     withContext(Dispatchers.Main) {
-                        _uiState.value = WeatherUiState.Success(slicedTime,slicedTemperature,slicedRain)
+                        _uiState.value = WeatherUiState.Success(slicedTime,slicedTemperature,slicedRain, temperatureUnit)
                     }
                 }
             } catch (e: Exception) {

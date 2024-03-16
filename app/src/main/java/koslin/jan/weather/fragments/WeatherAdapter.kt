@@ -11,7 +11,8 @@ import koslin.jan.weather.R
 class WeatherAdapter(
     private var time: List<String>,
     private var temperature: List<Double>,
-    private var rain: List<Double>
+    private var rain: List<Double>,
+    private var temperatureUnit: String
 ) : RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>() {
 
     class WeatherViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -23,10 +24,11 @@ class WeatherAdapter(
         val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
     }
 
-    fun updateData(newTime: List<String>, newTemperature: List<Double>, newRain: List<Double>) {
+    fun updateData(newTime: List<String>, newTemperature: List<Double>, newRain: List<Double>, newTemperatureUnit: String) {
         time = newTime
         temperature = newTemperature
         rain = newRain
+        temperatureUnit = newTemperatureUnit
         //WAŻNE
         notifyDataSetChanged()
     }
@@ -52,7 +54,11 @@ class WeatherAdapter(
         }
 
         // Format temperature and rain values
-        val formattedTemperature = String.format("%.1f°C", temperature[position])
+        val formattedTemperature = if (temperatureUnit == "celsius") {
+            String.format("%.1f°C", temperature[position])
+        } else {
+            String.format("%.1f°F", temperature[position])
+        }
         val formattedRain = String.format("%.1fmm", rain[position])
 
         holder.temperatureTextView.text = formattedTemperature
