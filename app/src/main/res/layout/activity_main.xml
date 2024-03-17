@@ -28,13 +28,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:icon="@drawable/today_icon"
-            android:text="DZISIAJ"/>
+            android:text="@string/today_tab"/>
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:icon="@drawable/future_icon"
-            android:text="NA TYDZIEŃ" />
+            android:text="@string/weekly_tab" />
     </com.google.android.material.tabs.TabLayout>
 
 </LinearLayout>
