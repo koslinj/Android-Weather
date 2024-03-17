@@ -15,4 +15,6 @@
     <string name="settings_tab">USTAWIENIA</string>
     <string name="today_tab">DZISIAJ</string>
     <string name="weekly_tab">NA TYDIEŃ</string>
+    <string name="enter_city">Wpisz miasto...</string>
+    <string name="favourite">Ulubione</string>
 </resources>
