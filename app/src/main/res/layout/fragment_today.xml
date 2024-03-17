@@ -20,23 +20,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <!-- TODO: Update blank fragment layout -->
-                <TextView
-                    android:id="@+id/todayMainTv"
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Miasto początkowe"
-                    android:textAlignment="center"
-                    android:textSize="28sp"
-                    android:layout_marginBottom="10dp"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content">
+
+                    <ImageButton
+                        android:id="@+id/addToFavButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:padding="12dp"
+                        android:contentDescription="Add to favourite"
+                        android:src="@drawable/heart_plus_icon"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                    <!-- TODO: Update blank fragment layout -->
+                    <TextView
+                        android:id="@+id/todayMainTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Miasto początkowe"
+                        android:textAlignment="center"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:gravity="center"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="10dp">
+                    android:orientation="horizontal">
 
                     <EditText
                         android:id="@+id/editTextCityName"
@@ -68,9 +88,18 @@
         android:id="@+id/weatherRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="32dp"
         android:clipToPadding="false"
         android:padding="16dp"
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <Button
+        android:id="@+id/showButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="2dp"
+        android:text="Ulubione" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

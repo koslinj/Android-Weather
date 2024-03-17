@@ -2,6 +2,7 @@ package koslin.jan.weather
 
 import android.app.Application
 import android.content.Context
+import android.location.Geocoder
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -41,6 +42,7 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
     val uiState: LiveData<WeatherUiState>
         get() = _uiState
 
+    private val geocoder = Geocoder(application)
     private val customPreferences = application.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
     val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(application)
     private var locationData: LocationData = getLocationDataFromPreferences()
@@ -59,6 +61,20 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
 
     private fun getTemperatureUnitPreference(): String {
         return defaultPreferences.getString(Keys.TEMPERATURE_UNIT_KEY, "celsiusDefault") ?: "celsius"
+    }
+
+    fun handleSearch(cityName: String, changeDefault: Boolean) {
+        val addresses = geocoder.getFromLocationName(cityName, 1)
+
+        if (addresses != null && addresses.isNotEmpty()) {
+            val latitude = addresses[0].latitude
+            val longitude = addresses[0].longitude
+            val city = addresses[0].locality
+            updateLocationData(LocationData(latitude, longitude, city), changeDefault)
+            getWeatherData()
+        } else {
+            // Handle no results or error
+        }
     }
 
     fun getWeatherData() {
@@ -101,6 +117,13 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
     init {
         getWeatherData()
         _defaultCity.value = locationData.cityName
+    }
+
+    fun addToFavorites() {
+        val currentCity = getCurrentCity()
+        val favoritesSet = customPreferences.getStringSet(Keys.FAVOURITE_CITIES_KEY, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+        favoritesSet.add(currentCity)
+        customPreferences.edit().putStringSet(Keys.FAVOURITE_CITIES_KEY, favoritesSet).apply()
     }
 
     // Function to update location data

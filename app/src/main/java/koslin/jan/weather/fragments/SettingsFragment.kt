@@ -37,7 +37,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         saveButton.setOnClickListener {
             val defaultCity = defaultCityEditText.text.toString()
-            handleSearch(defaultCity)
+            weatherViewModel.handleSearch(defaultCity, true)
+            Toast.makeText(requireContext(), "Default city saved", Toast.LENGTH_SHORT).show()
         }
 
         val preferencesFragmentContainer = view.findViewById<FragmentContainerView>(R.id.preferencesFragmentContainer)
@@ -47,26 +48,5 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         childFragmentManager.beginTransaction()
             .replace(preferencesFragmentContainer.id, preferencesFragment)
             .commit()
-    }
-
-    private fun handleSearch(cityName: String) {
-        // Geocoding logic
-        val geocoder = Geocoder(requireContext())
-        val addresses = geocoder.getFromLocationName(cityName, 1)
-
-        if (addresses != null && addresses.isNotEmpty()) {
-            val latitude = addresses[0].latitude
-            val longitude = addresses[0].longitude
-            val city = addresses[0].locality
-
-            // Update the ViewModel with the new default city
-            weatherViewModel.updateLocationData(LocationData(latitude, longitude, city), true)
-
-            // Call the API with the obtained latitude and longitude
-            weatherViewModel.getWeatherData()
-            Toast.makeText(requireContext(), "Default city saved", Toast.LENGTH_SHORT).show()
-        } else {
-            // Handle no results or error
-        }
     }
 }

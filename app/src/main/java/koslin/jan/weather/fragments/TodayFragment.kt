@@ -2,15 +2,19 @@ package koslin.jan.weather.fragments
 
 import android.location.Geocoder
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.sidesheet.SideSheetDialog
+import koslin.jan.weather.ModalBottomSheet
 import koslin.jan.weather.R
 import koslin.jan.weather.WeatherUiState
 import koslin.jan.weather.WeatherViewModel
@@ -21,6 +25,8 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
     private lateinit var todayMainTv: TextView
     private lateinit var cityNameEditText: EditText
     private lateinit var searchButton: Button
+    private lateinit var showButton: Button
+    private lateinit var addToFavButton: ImageButton
     private lateinit var loadingProgressBar: ProgressBar
 
     private lateinit var recyclerView: RecyclerView
@@ -33,6 +39,8 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         todayMainTv = view.findViewById(R.id.todayMainTv)
         cityNameEditText = view.findViewById(R.id.editTextCityName)
         searchButton = view.findViewById(R.id.buttonSearch)
+        showButton = view.findViewById(R.id.showButton)
+        addToFavButton = view.findViewById(R.id.addToFavButton)
         loadingProgressBar = view.findViewById(R.id.loadingProgressBar)
 
         recyclerView = view.findViewById(R.id.weatherRecyclerView)
@@ -51,26 +59,21 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
             // Handle the search logic here
             val cityName = cityNameEditText.text.toString()
             // Call the method to handle geocoding and weather data fetching
-            handleSearch(cityName)
+            weatherViewModel.handleSearch(cityName, false)
         }
 
+        showButton.setOnClickListener {
+            showBottomSheet()
+        }
+
+        addToFavButton.setOnClickListener {
+            weatherViewModel.addToFavorites()
+        }
     }
 
-    private fun handleSearch(cityName: String) {
-        // Geocoding logic
-        val geocoder = Geocoder(requireContext())
-        val addresses = geocoder.getFromLocationName(cityName, 1)
-
-        if (addresses != null && addresses.isNotEmpty()) {
-            val latitude = addresses[0].latitude
-            val longitude = addresses[0].longitude
-            val city = addresses[0].locality
-            weatherViewModel.updateLocationData(LocationData(latitude, longitude, city), false)
-            // Call the API with the obtained latitude and longitude
-            weatherViewModel.getWeatherData()
-        } else {
-            // Handle no results or error
-        }
+    private fun showBottomSheet() {
+        val modalBottomSheet = ModalBottomSheet()
+        modalBottomSheet.show(childFragmentManager, ModalBottomSheet.TAG)
     }
 
     private fun handleUiState(uiState: WeatherUiState) {
