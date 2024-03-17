@@ -8,4 +8,7 @@
     <!-- Messages Preferences -->
     <string name="temperature_unit_title">Temperature</string>
     <string name="wind_unit_title">Wind speed</string>
+    <string name="settings">Settings</string>
+    <string name="default_city">Default city...</string>
+    <string name="search">Search</string>
 </resources>
