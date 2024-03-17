@@ -5,10 +5,11 @@ import retrofit2.http.Query
 
 interface WeatherApi {
 
-    @GET("v1/forecast?hourly=temperature_2m,rain")
+    @GET("v1/forecast?hourly=temperature_2m,rain,wind_speed_10m")
     suspend fun getWeatherData(
         @Query("latitude") lat: Double,
         @Query("longitude") long: Double,
-        @Query("temperature_unit") temperatureUnit: String? = null
+        @Query("temperature_unit") temperatureUnit: String? = null,
+        @Query("wind_speed_unit") windSpeedUnit: String? = null
     ): WeatherDto
 }

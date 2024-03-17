@@ -11,7 +11,8 @@ import koslin.jan.weather.data.SingleWeatherInfo
 
 class WeatherAdapter(
     private var weatherInfo: List<SingleWeatherInfo>,
-    private var temperatureUnit: String
+    private var temperatureUnit: String,
+    private var windSpeedUnit: String
 ) : RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>() {
 
     class WeatherViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -19,13 +20,15 @@ class WeatherAdapter(
         val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
         val temperatureTextView: TextView = itemView.findViewById(R.id.temperatureTextView)
         val rainTextView: TextView = itemView.findViewById(R.id.rainTextView)
+        val windSpeedTextView: TextView = itemView.findViewById(R.id.windSpeedTextView)
         val weatherIconImageView: ImageView = itemView.findViewById(R.id.weatherIconImageView)
         val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
     }
 
-    fun updateData(newWeatherInfo: List<SingleWeatherInfo>, newTemperatureUnit: String) {
+    fun updateData(newWeatherInfo: List<SingleWeatherInfo>, newTemperatureUnit: String, newWindSpeedUnit: String) {
         weatherInfo = newWeatherInfo
         temperatureUnit = newTemperatureUnit
+        windSpeedUnit = newWindSpeedUnit
         //WAŻNE
         notifyDataSetChanged()
     }
@@ -50,16 +53,22 @@ class WeatherAdapter(
             holder.dateTextView.visibility = View.GONE
         }
 
-        // Format temperature and rain values
+        // Format temperature, wind speed and rain values
         val formattedTemperature = if (temperatureUnit == "celsius") {
             String.format("%.1f°C", weatherInfo[position].temperature)
         } else {
             String.format("%.1f°F", weatherInfo[position].temperature)
         }
+        val formattedWindSpeed = when (windSpeedUnit) {
+            "kmh" -> String.format("%.1f Km/h", weatherInfo[position].windSpeed)
+            "ms" -> String.format("%.1f m/s", weatherInfo[position].windSpeed)
+            else -> String.format("%.1f Mph", weatherInfo[position].windSpeed)
+        }
         val formattedRain = String.format("%.1fmm", weatherInfo[position].rain)
 
         holder.temperatureTextView.text = formattedTemperature
         holder.rainTextView.text = formattedRain
+        holder.windSpeedTextView.text = formattedWindSpeed
 
         // Set weather icons based on rain conditions (for example)
         val rainAmount = weatherInfo[position].rain

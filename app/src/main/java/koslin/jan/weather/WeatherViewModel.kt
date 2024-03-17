@@ -28,7 +28,8 @@ import kotlin.math.abs
 sealed interface WeatherUiState {
     data class Success(
         val weatherInfo: List<SingleWeatherInfo>,
-        val temperatureUnit: String
+        val temperatureUnit: String,
+        val windSpeedUnit: String
     ) : WeatherUiState
 
     object Loading : WeatherUiState
@@ -46,6 +47,7 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
     val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(application)
     private var locationData: LocationData = getLocationDataFromPreferences()
     private var temperatureUnit: String = getTemperatureUnitPreference()
+    private var windSpeedUnit: String = getWindSpeedUnitPreference()
 
     private val _defaultCity = MutableLiveData<String>()
     val defaultCity: LiveData<String>
@@ -59,7 +61,11 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
     }
 
     private fun getTemperatureUnitPreference(): String {
-        return defaultPreferences.getString(Keys.TEMPERATURE_UNIT_KEY, "celsiusDefault") ?: "celsius"
+        return defaultPreferences.getString(Keys.TEMPERATURE_UNIT_KEY, "celsius") ?: "celsius"
+    }
+
+    private fun getWindSpeedUnitPreference(): String {
+        return defaultPreferences.getString(Keys.WIND_UNIT_KEY, "kmh") ?: "kmh"
     }
 
     fun handleSearch(cityName: String, changeDefault: Boolean) {
@@ -84,12 +90,17 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
                         _uiState.value = WeatherUiState.Loading
                     }
                     // Perform network request here
-                    val res = repository.getWeather(locationData.latitude, locationData.longitude, temperatureUnit)
+                    val res = repository.getWeather(locationData.latitude, locationData.longitude, temperatureUnit, windSpeedUnit)
                     val weatherInfo = List(res.weatherData.time.size) { index ->
-                        SingleWeatherInfo(res.weatherData.time[index], res.weatherData.temperature[index], res.weatherData.rain[index])
+                        SingleWeatherInfo(
+                            res.weatherData.time[index],
+                            res.weatherData.temperature[index],
+                            res.weatherData.rain[index],
+                            res.weatherData.windSpeed[index]
+                        )
                     }
                     withContext(Dispatchers.Main) {
-                        _uiState.value = WeatherUiState.Success(weatherInfo, temperatureUnit)
+                        _uiState.value = WeatherUiState.Success(weatherInfo, temperatureUnit, windSpeedUnit)
                     }
                 }
             } catch (e: Exception) {
@@ -123,6 +134,10 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
 
     fun updateTemperatureUnit() {
         this.temperatureUnit = getTemperatureUnitPreference()
+    }
+
+    fun updateWindSpeedUnit() {
+        this.windSpeedUnit = getWindSpeedUnitPreference()
     }
 
     private fun saveLocationDataToPreferences(locationData: LocationData) {

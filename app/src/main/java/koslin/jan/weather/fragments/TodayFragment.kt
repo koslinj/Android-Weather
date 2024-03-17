@@ -53,7 +53,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         loadingProgressBar = view.findViewById(R.id.loadingProgressBar)
 
         recyclerView = view.findViewById(R.id.weatherRecyclerView)
-        adapter = WeatherAdapter(emptyList(), "")
+        adapter = WeatherAdapter(emptyList(), "", "")
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -91,6 +91,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
                 CoroutineScope(Dispatchers.IO).launch {
                     val weatherInfo = uiState.weatherInfo
                     val temperatureUnit = uiState.temperatureUnit
+                    val windSpeedUnit = uiState.windSpeedUnit
 
                     val currentDateTime = Date()
                     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
@@ -104,11 +105,11 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
                         val endIndex = startIndex + 24
 
                         val slicedWeatherInfo = weatherInfo.subList(startIndex, endIndex)
-                        slicedWeatherInfo.map { SingleWeatherInfo(it.time, it.temperature, it.rain) }
+                        slicedWeatherInfo.map { SingleWeatherInfo(it.time, it.temperature, it.rain, it.windSpeed) }
                     } ?: emptyList()
 
                     withContext(Dispatchers.Main) {
-                        updateUI(formattedWeatherInfo, temperatureUnit)
+                        updateUI(formattedWeatherInfo, temperatureUnit, windSpeedUnit)
                         todayMainTv.text = weatherViewModel.getCurrentCity()
                         loadingProgressBar.visibility = View.GONE
                         recyclerView.visibility = View.VISIBLE
@@ -127,7 +128,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         }
     }
 
-    private fun updateUI(weatherInfo: List<SingleWeatherInfo>, temperatureUnit: String) {
-        adapter.updateData(weatherInfo, temperatureUnit)
+    private fun updateUI(weatherInfo: List<SingleWeatherInfo>, temperatureUnit: String, windSpeedUnit: String) {
+        adapter.updateData(weatherInfo, temperatureUnit, windSpeedUnit)
     }
 }

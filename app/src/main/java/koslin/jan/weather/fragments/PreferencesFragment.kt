@@ -21,6 +21,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
             .get(WeatherViewModel::class.java)
 
         preferencesChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            weatherViewModel.updateWindSpeedUnit()
             weatherViewModel.updateTemperatureUnit()
             weatherViewModel.getWeatherData()
         }
