@@ -11,4 +11,7 @@
     <string name="settings">Settings</string>
     <string name="default_city">Default city...</string>
     <string name="search">Search</string>
+    <string name="settings_tab">SETTINGS</string>
+    <string name="today_tab">TODAY</string>
+    <string name="weekly_tab">WEEKLY</string>
 </resources>

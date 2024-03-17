@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:icon="@drawable/settings_icon"
-            android:text="USTAWIENIA"/>
+            android:text="@string/settings_tab"/>
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"

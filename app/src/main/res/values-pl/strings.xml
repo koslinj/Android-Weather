@@ -12,4 +12,7 @@
     <string name="settings">Ustawienia</string>
     <string name="default_city">Domyślne miasto...</string>
     <string name="search">Szukaj</string>
+    <string name="settings_tab">USTAWIENIA</string>
+    <string name="today_tab">DZISIAJ</string>
+    <string name="weekly_tab">NA TYDIEŃ</string>
 </resources>
