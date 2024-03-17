@@ -1,8 +1,24 @@
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/cityNameTextView"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:textSize="30sp"
-    android:gravity="center_vertical"
-    />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:gravity="center">
+
+    <Button xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/cityNameButton"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:textSize="30sp" />
+
+    <Button xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/removeFromFavButton"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        app:icon="@drawable/delete_icon"
+        style="?attr/materialIconButtonFilledStyle"
+        android:contentDescription="Delete from favourite cities" />
+</LinearLayout>

@@ -26,7 +26,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
     private lateinit var cityNameEditText: EditText
     private lateinit var searchButton: Button
     private lateinit var showButton: Button
-    private lateinit var addToFavButton: ImageButton
+    private lateinit var addToFavButton: Button
     private lateinit var loadingProgressBar: ProgressBar
 
     private lateinit var recyclerView: RecyclerView

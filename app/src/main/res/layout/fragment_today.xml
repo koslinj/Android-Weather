@@ -23,16 +23,18 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp">
 
-                    <ImageButton
+                    <Button
                         android:id="@+id/addToFavButton"
+                        style="?attr/materialIconButtonFilledStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
-                        android:padding="12dp"
+                        android:layout_marginEnd="10dp"
                         android:contentDescription="Add to favourite"
-                        android:src="@drawable/heart_plus_icon"
+                        android:padding="14dp"
+                        app:icon="@drawable/heart_plus_icon"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -41,7 +43,7 @@
                         android:id="@+id/todayMainTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Miasto początkowe"
+                        android:text="Miasto startowe"
                         android:textAlignment="center"
                         android:textSize="28sp"
                         android:textStyle="bold"

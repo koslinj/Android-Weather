@@ -3,22 +3,34 @@ package koslin.jan.weather
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CityAdapter(private val cities: List<String>, private val onItemClick: (String) -> Unit) : RecyclerView.Adapter<CityAdapter.CityViewHolder>() {
+class CityAdapter(
+    private var cities: List<String>,
+    private val onItemClick: (String) -> Unit,
+    private val onRemoveClick: (String) -> Unit
+) : RecyclerView.Adapter<CityAdapter.CityViewHolder>() {
 
     inner class CityViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val cityNameTextView: TextView = itemView.findViewById(R.id.cityNameTextView)
+        private val cityNameButton: Button = itemView.findViewById(R.id.cityNameButton)
+        private val removeButton: Button = itemView.findViewById(R.id.removeFromFavButton)
+
 
         init {
-            itemView.setOnClickListener {
+            cityNameButton.setOnClickListener {
                 onItemClick(cities[adapterPosition])
+            }
+
+            removeButton.setOnClickListener {
+                onRemoveClick(cities[adapterPosition])
             }
         }
 
         fun bind(city: String) {
-            cityNameTextView.text = city
+            cityNameButton.text = city
         }
     }
 
@@ -34,5 +46,10 @@ class CityAdapter(private val cities: List<String>, private val onItemClick: (St
 
     override fun getItemCount(): Int {
         return cities.size
+    }
+
+    fun updateData(newCities: List<String>) {
+        cities = newCities
+        notifyDataSetChanged()
     }
 }
