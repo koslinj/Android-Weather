@@ -16,6 +16,7 @@ import androidx.preference.PreferenceManager
 import koslin.jan.weather.config.Keys
 import koslin.jan.weather.data.LocationData
 import koslin.jan.weather.data.Repository
+import koslin.jan.weather.data.SingleWeatherInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,9 +27,7 @@ import kotlin.math.abs
 
 sealed interface WeatherUiState {
     data class Success(
-        val time: List<String>,
-        val temperature: List<Double>,
-        val rain: List<Double>,
+        val weatherInfo: List<SingleWeatherInfo>,
         val temperatureUnit: String
     ) : WeatherUiState
 
@@ -80,31 +79,17 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
     fun getWeatherData() {
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
+                withContext(Dispatchers.Default) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = WeatherUiState.Loading
                     }
                     // Perform network request here
                     val res = repository.getWeather(locationData.latitude, locationData.longitude, temperatureUnit)
-                    val currentDateTime = Date()
-                    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
-                    val currentHour = dateFormat.format(currentDateTime)
-
-                    // Find the closest timestamp to the current time in the time array
-                    val closestTimestamp = res.weatherData.time.minByOrNull {
-                        abs(dateFormat.parse(it).time - currentDateTime.time)
+                    val weatherInfo = List(res.weatherData.time.size) { index ->
+                        SingleWeatherInfo(res.weatherData.time[index], res.weatherData.temperature[index], res.weatherData.rain[index])
                     }
-
-                    val startIndex = res.weatherData.time.indexOf(closestTimestamp)
-
-                    // Extract the next 24 elements
-                    val endIndex = startIndex + 24
-
-                    val slicedTime = res.weatherData.time.subList(startIndex, endIndex)
-                    val slicedTemperature = res.weatherData.temperature.subList(startIndex, endIndex)
-                    val slicedRain = res.weatherData.rain.subList(startIndex, endIndex)
                     withContext(Dispatchers.Main) {
-                        _uiState.value = WeatherUiState.Success(slicedTime,slicedTemperature,slicedRain, temperatureUnit)
+                        _uiState.value = WeatherUiState.Success(weatherInfo, temperatureUnit)
                     }
                 }
             } catch (e: Exception) {

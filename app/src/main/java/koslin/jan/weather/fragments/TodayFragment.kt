@@ -19,6 +19,15 @@ import koslin.jan.weather.R
 import koslin.jan.weather.WeatherUiState
 import koslin.jan.weather.WeatherViewModel
 import koslin.jan.weather.data.LocationData
+import koslin.jan.weather.data.SingleWeatherInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import kotlin.math.abs
 
 class TodayFragment : Fragment(R.layout.fragment_today) {
 
@@ -44,7 +53,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         loadingProgressBar = view.findViewById(R.id.loadingProgressBar)
 
         recyclerView = view.findViewById(R.id.weatherRecyclerView)
-        adapter = WeatherAdapter(emptyList(), emptyList(), emptyList(), "")
+        adapter = WeatherAdapter(emptyList(), "")
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -79,16 +88,32 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
     private fun handleUiState(uiState: WeatherUiState) {
         when (uiState) {
             is WeatherUiState.Success -> {
-                val time = uiState.time
-                val temperature = uiState.temperature
-                val rain = uiState.rain
-                val temperatureUnit = uiState.temperatureUnit
+                CoroutineScope(Dispatchers.Default).launch {
+                    val weatherInfo = uiState.weatherInfo
+                    val temperatureUnit = uiState.temperatureUnit
 
-                // Now you can use this data to update your UI
-                updateUI(time, temperature, rain, temperatureUnit)
-                todayMainTv.text = weatherViewModel.getCurrentCity()
-                loadingProgressBar.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
+                    val currentDateTime = Date()
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
+
+                    val closestTimestamp = weatherInfo.minByOrNull {
+                        abs(dateFormat.parse(it.time).time - currentDateTime.time)
+                    }?.time
+
+                    val formattedWeatherInfo = closestTimestamp?.let { closestTime ->
+                        val startIndex = weatherInfo.indexOfFirst { it.time == closestTime }
+                        val endIndex = startIndex + 24
+
+                        val slicedWeatherInfo = weatherInfo.subList(startIndex, endIndex)
+                        slicedWeatherInfo.map { SingleWeatherInfo(it.time, it.temperature, it.rain) }
+                    } ?: emptyList()
+
+                    withContext(Dispatchers.Main) {
+                        updateUI(formattedWeatherInfo, temperatureUnit)
+                        todayMainTv.text = weatherViewModel.getCurrentCity()
+                        loadingProgressBar.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
+                    }
+                }
             }
             WeatherUiState.Loading -> {
                 todayMainTv.text = getString(R.string.loading)
@@ -102,7 +127,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         }
     }
 
-    private fun updateUI(time: List<String>, temperature: List<Double>, rain: List<Double>, temperatureUnit: String) {
-        adapter.updateData(time, temperature, rain, temperatureUnit)
+    private fun updateUI(weatherInfo: List<SingleWeatherInfo>, temperatureUnit: String) {
+        adapter.updateData(weatherInfo, temperatureUnit)
     }
 }

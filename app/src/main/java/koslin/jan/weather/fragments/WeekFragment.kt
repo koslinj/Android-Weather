@@ -2,59 +2,102 @@ package koslin.jan.weather.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.ProgressBar
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import koslin.jan.weather.R
+import koslin.jan.weather.WeatherUiState
+import koslin.jan.weather.WeatherViewModel
+import koslin.jan.weather.data.SingleWeatherInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import kotlin.math.abs
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class WeekFragment : Fragment(R.layout.fragment_week) {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [WeekFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class WeekFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var weatherViewModel: WeatherViewModel
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: WeeklyWeatherAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private lateinit var loadingProgressBar: ProgressBar
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBar)
+
+        recyclerView = view.findViewById(R.id.weatherRecyclerView)
+        adapter = WeeklyWeatherAdapter(emptyList(), "")
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        weatherViewModel = ViewModelProvider(requireActivity(), WeatherViewModel.Factory)
+            .get(WeatherViewModel::class.java)
+        weatherViewModel.uiState.observe(viewLifecycleOwner) { uiState ->
+            handleUiState(uiState)
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_week, container, false)
+    private fun handleUiState(uiState: WeatherUiState) {
+        when (uiState) {
+            is WeatherUiState.Success -> {
+                val weatherInfo = uiState.weatherInfo
+                val temperatureUnit = uiState.temperatureUnit
+
+                CoroutineScope(Dispatchers.Default).launch {
+                    val filteredWeatherInfo = mutableListOf<SingleWeatherInfo>()
+
+                    val currentDateTime = Calendar.getInstance()
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
+
+                    repeat(7) { dayIndex ->
+                        val currentDay = currentDateTime.clone() as Calendar
+                        currentDay.add(Calendar.DAY_OF_YEAR, dayIndex)
+
+                        val dayWeatherInfo = weatherInfo.filter { weather ->
+                            val dateTime = dateFormat.parse(weather.time)
+                            val weatherDateTime = Calendar.getInstance()
+                            weatherDateTime.time = dateTime
+                            weatherDateTime.get(Calendar.DAY_OF_YEAR) == currentDay.get(Calendar.DAY_OF_YEAR) &&
+                                    (weatherDateTime.get(Calendar.HOUR_OF_DAY) == 10 ||
+                                            weatherDateTime.get(Calendar.HOUR_OF_DAY) == 15 ||
+                                            weatherDateTime.get(Calendar.HOUR_OF_DAY) == 20)
+                        }
+
+                        filteredWeatherInfo.addAll(dayWeatherInfo)
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        updateUI(filteredWeatherInfo, temperatureUnit)
+                        loadingProgressBar.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
+                    }
+                }
+
+            }
+
+            WeatherUiState.Loading -> {
+                loadingProgressBar.visibility = View.VISIBLE
+                recyclerView.visibility = View.GONE
+            }
+
+            WeatherUiState.Error -> {
+                loadingProgressBar.visibility = View.GONE
+                recyclerView.visibility = View.GONE
+            }
+        }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment WeekFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            WeekFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun updateUI(weatherInfo: List<SingleWeatherInfo>, temperatureUnit: String) {
+        adapter.updateData(weatherInfo, temperatureUnit)
     }
+
 }

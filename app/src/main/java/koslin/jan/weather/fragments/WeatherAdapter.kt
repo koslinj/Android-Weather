@@ -7,11 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import koslin.jan.weather.R
+import koslin.jan.weather.data.SingleWeatherInfo
 
 class WeatherAdapter(
-    private var time: List<String>,
-    private var temperature: List<Double>,
-    private var rain: List<Double>,
+    private var weatherInfo: List<SingleWeatherInfo>,
     private var temperatureUnit: String
 ) : RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>() {
 
@@ -24,10 +23,8 @@ class WeatherAdapter(
         val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
     }
 
-    fun updateData(newTime: List<String>, newTemperature: List<Double>, newRain: List<Double>, newTemperatureUnit: String) {
-        time = newTime
-        temperature = newTemperature
-        rain = newRain
+    fun updateData(newWeatherInfo: List<SingleWeatherInfo>, newTemperatureUnit: String) {
+        weatherInfo = newWeatherInfo
         temperatureUnit = newTemperatureUnit
         //WAŻNE
         notifyDataSetChanged()
@@ -42,12 +39,12 @@ class WeatherAdapter(
 
     override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
         // Bind the data to the views in each item
-        val len = time[position].length
-        val onlyHour = time[position].subSequence(len - 5, len)
+        val len = weatherInfo[position].time.length
+        val onlyHour = weatherInfo[position].time.subSequence(len - 5, len)
         holder.timeTextView.text = onlyHour
 
         if (onlyHour == "00:00" || position == 0) {
-            holder.dateTextView.text = time[position].subSequence(0, len - 6)
+            holder.dateTextView.text = weatherInfo[position].time.subSequence(0, len - 6)
             holder.dateTextView.visibility = View.VISIBLE
         } else {
             holder.dateTextView.visibility = View.GONE
@@ -55,17 +52,17 @@ class WeatherAdapter(
 
         // Format temperature and rain values
         val formattedTemperature = if (temperatureUnit == "celsius") {
-            String.format("%.1f°C", temperature[position])
+            String.format("%.1f°C", weatherInfo[position].temperature)
         } else {
-            String.format("%.1f°F", temperature[position])
+            String.format("%.1f°F", weatherInfo[position].temperature)
         }
-        val formattedRain = String.format("%.1fmm", rain[position])
+        val formattedRain = String.format("%.1fmm", weatherInfo[position].rain)
 
         holder.temperatureTextView.text = formattedTemperature
         holder.rainTextView.text = formattedRain
 
         // Set weather icons based on rain conditions (for example)
-        val rainAmount = rain[position]
+        val rainAmount = weatherInfo[position].rain
         if (rainAmount > 0) {
             holder.weatherIconImageView.setImageResource(R.drawable.rain_icon)
         } else {
@@ -76,6 +73,6 @@ class WeatherAdapter(
 
     override fun getItemCount(): Int {
         // Return the number of items in your data
-        return time.size
+        return weatherInfo.size
     }
 }
