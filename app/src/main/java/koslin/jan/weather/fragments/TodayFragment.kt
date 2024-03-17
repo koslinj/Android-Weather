@@ -88,7 +88,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
     private fun handleUiState(uiState: WeatherUiState) {
         when (uiState) {
             is WeatherUiState.Success -> {
-                CoroutineScope(Dispatchers.Default).launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val weatherInfo = uiState.weatherInfo
                     val temperatureUnit = uiState.temperatureUnit
 

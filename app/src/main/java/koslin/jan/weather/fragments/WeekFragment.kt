@@ -52,7 +52,7 @@ class WeekFragment : Fragment(R.layout.fragment_week) {
                 val weatherInfo = uiState.weatherInfo
                 val temperatureUnit = uiState.temperatureUnit
 
-                CoroutineScope(Dispatchers.Default).launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val filteredWeatherInfo = mutableListOf<SingleWeatherInfo>()
 
                     val currentDateTime = Calendar.getInstance()
