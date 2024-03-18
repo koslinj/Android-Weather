@@ -3,6 +3,7 @@ package koslin.jan.weather
 import android.app.Application
 import android.content.Context
 import android.location.Geocoder
+import android.net.ConnectivityManager
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -13,6 +14,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.preference.PreferenceManager
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import koslin.jan.weather.config.Keys
 import koslin.jan.weather.data.LocationData
 import koslin.jan.weather.data.Repository
@@ -20,6 +24,8 @@ import koslin.jan.weather.data.SingleWeatherInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -36,14 +42,25 @@ sealed interface WeatherUiState {
     object Error : WeatherUiState
 }
 
-class WeatherViewModel(private val repository: Repository, application: Application) : AndroidViewModel(application) {
+class WeatherViewModel(
+    private val repository: Repository,
+    moshi: Moshi,
+    private val application: Application
+) : AndroidViewModel(application) {
 
     private val _uiState = MutableLiveData<WeatherUiState>(WeatherUiState.Loading)
     val uiState: LiveData<WeatherUiState>
         get() = _uiState
 
+    private val listType =
+        Types.newParameterizedType(List::class.java, SingleWeatherInfo::class.java)
+    private val jsonAdapter: JsonAdapter<List<SingleWeatherInfo>> = moshi.adapter(listType)
+
     private val geocoder = Geocoder(application)
-    private val customPreferences = application.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+    private val connectivityManager =
+        application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+    private val customPreferences =
+        application.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
     val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(application)
     private var locationData: LocationData = getLocationDataFromPreferences()
     private var temperatureUnit: String = getTemperatureUnitPreference()
@@ -69,38 +86,77 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
     }
 
     fun handleSearch(cityName: String, changeDefault: Boolean) {
-        val addresses = geocoder.getFromLocationName(cityName, 1)
+        if (isNetworkAvailable()) {
+            val addresses = geocoder.getFromLocationName(cityName, 1)
 
-        if (addresses != null && addresses.isNotEmpty()) {
-            val latitude = addresses[0].latitude
-            val longitude = addresses[0].longitude
-            val city = addresses[0].locality
-            updateLocationData(LocationData(latitude, longitude, city), changeDefault)
-            getWeatherData()
+            if (addresses != null && addresses.isNotEmpty()) {
+                val latitude = addresses[0].latitude
+                val longitude = addresses[0].longitude
+                val city = addresses[0].locality
+                updateLocationData(LocationData(latitude, longitude, city), changeDefault)
+                getWeatherData()
+            } else {
+                // Handle no results or error
+            }
         } else {
-            // Handle no results or error
+            Log.d("FILEREAD", "BEFORE " + cityName)
+            getWeatherFromFile(cityName)
+            locationData.cityName = cityName
+        }
+
+    }
+
+    private fun saveWeatherDataToFile(weatherInfo: List<SingleWeatherInfo>, cityName: String) {
+        try {
+            val json = jsonAdapter.toJson(weatherInfo)
+            val fileName = "$cityName.json"
+            application.openFileOutput(fileName, Context.MODE_PRIVATE).use {
+                it.write(json.toByteArray())
+            }
+        } catch (e: IOException) {
+            Log.e("WeatherViewModel", "Error saving weather data to file: ${e.message}", e)
         }
     }
 
-    fun getWeatherData() {
+    private fun loadWeatherDataFromFile(cityName: String): List<SingleWeatherInfo>? {
+        return try {
+            val fileName = "$cityName.json"
+            Log.d("FILEREAD", "INSIDE " + fileName)
+            val file = File(application.filesDir, fileName)
+            if (file.exists()) {
+                Log.d("FILEREAD", "exists")
+                val json = file.readText()
+                jsonAdapter.fromJson(json)
+            } else {
+                Log.d("FILEREAD", "not existing")
+                null
+            }
+        } catch (e: IOException) {
+            Log.e("WeatherViewModel", "Error loading weather data from file: ${e.message}", e)
+            null
+        }
+    }
+
+    fun getWeatherFromFile(fileName: String) {
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.Default) {
+                withContext(Dispatchers.IO) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = WeatherUiState.Loading
                     }
-                    // Perform network request here
-                    val res = repository.getWeather(locationData.latitude, locationData.longitude, temperatureUnit, windSpeedUnit)
-                    val weatherInfo = List(res.weatherData.time.size) { index ->
-                        SingleWeatherInfo(
-                            res.weatherData.time[index],
-                            res.weatherData.temperature[index],
-                            res.weatherData.rain[index],
-                            res.weatherData.windSpeed[index]
-                        )
-                    }
-                    withContext(Dispatchers.Main) {
-                        _uiState.value = WeatherUiState.Success(weatherInfo, temperatureUnit, windSpeedUnit)
+                    val weatherInfoFromFile = loadWeatherDataFromFile(fileName)
+                    if (weatherInfoFromFile != null) {
+                        withContext(Dispatchers.Main) {
+                            _uiState.value = WeatherUiState.Success(
+                                weatherInfoFromFile,
+                                temperatureUnit,
+                                windSpeedUnit
+                            )
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            _uiState.value = WeatherUiState.Error
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -110,6 +166,65 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
         }
     }
 
+    fun getWeatherData() {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    if (isNetworkAvailable()) {
+                        withContext(Dispatchers.Main) {
+                            _uiState.value = WeatherUiState.Loading
+                        }
+                        val res = repository.getWeather(
+                            locationData.latitude,
+                            locationData.longitude,
+                            temperatureUnit,
+                            windSpeedUnit
+                        )
+                        val weatherInfo = List(res.weatherData.time.size) { index ->
+                            SingleWeatherInfo(
+                                res.weatherData.time[index],
+                                res.weatherData.temperature[index],
+                                res.weatherData.rain[index],
+                                res.weatherData.windSpeed[index]
+                            )
+                        }
+                        withContext(Dispatchers.Main) {
+                            _uiState.value =
+                                WeatherUiState.Success(weatherInfo, temperatureUnit, windSpeedUnit)
+                        }
+                        saveWeatherDataToFile(weatherInfo, locationData.cityName)
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            _uiState.value = WeatherUiState.Loading
+                        }
+                        val weatherInfoFromFile = loadWeatherDataFromFile(locationData.cityName)
+                        if (weatherInfoFromFile != null) {
+                            withContext(Dispatchers.Main) {
+                                _uiState.value = WeatherUiState.Success(
+                                    weatherInfoFromFile,
+                                    temperatureUnit,
+                                    windSpeedUnit
+                                )
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                _uiState.value = WeatherUiState.Error
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.value = WeatherUiState.Error
+                Log.e("TEST", "Exception: ${e.message}", e)
+            }
+        }
+    }
+
+    fun isNetworkAvailable(): Boolean {
+        val networkInfo = connectivityManager?.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
+
     init {
         getWeatherData()
         _defaultCity.value = locationData.cityName
@@ -117,7 +232,8 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
 
     fun addToFavorites() {
         val currentCity = getCurrentCity()
-        val favoritesSet = customPreferences.getStringSet(Keys.FAVOURITE_CITIES_KEY, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+        val favoritesSet = customPreferences.getStringSet(Keys.FAVOURITE_CITIES_KEY, mutableSetOf())
+            ?.toMutableSet() ?: mutableSetOf()
         favoritesSet.add(currentCity)
         customPreferences.edit().putStringSet(Keys.FAVOURITE_CITIES_KEY, favoritesSet).apply()
     }
@@ -126,7 +242,7 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
     fun updateLocationData(locationData: LocationData, changeDefault: Boolean) {
         this.locationData = locationData
         // Save updated location data to SharedPreferences
-        if(changeDefault){
+        if (changeDefault) {
             saveLocationDataToPreferences(locationData)
             _defaultCity.value = locationData.cityName
         }
@@ -157,7 +273,8 @@ class WeatherViewModel(private val repository: Repository, application: Applicat
             initializer {
                 val application = (this[APPLICATION_KEY] as WeatherApplication)
                 val repository = application.container.repository
-                WeatherViewModel(repository = repository, application = application)
+                val moshi = application.container.moshi
+                WeatherViewModel(repository = repository, moshi = moshi, application = application)
             }
         }
     }

@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -68,7 +69,12 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
             // Handle the search logic here
             val cityName = cityNameEditText.text.toString()
             // Call the method to handle geocoding and weather data fetching
-            weatherViewModel.handleSearch(cityName, false)
+            if(weatherViewModel.isNetworkAvailable()){
+                weatherViewModel.handleSearch(cityName, false)
+            }
+            else {
+                Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_SHORT).show()
+            }
         }
 
         showButton.setOnClickListener {

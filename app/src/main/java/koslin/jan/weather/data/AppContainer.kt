@@ -9,12 +9,13 @@ import retrofit2.create
 
 interface AppContainer {
     val repository: Repository
+    val moshi: Moshi
 }
 
 class DefaultAppContainer : AppContainer {
     private val baseUrl = "https://api.open-meteo.com/"
 
-    private val moshi = Moshi.Builder()
+    override val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
     private val retrofit = Retrofit.Builder()
