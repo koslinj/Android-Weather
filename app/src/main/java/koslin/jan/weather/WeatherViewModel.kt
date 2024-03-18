@@ -21,6 +21,7 @@ import koslin.jan.weather.config.Keys
 import koslin.jan.weather.data.LocationData
 import koslin.jan.weather.data.Repository
 import koslin.jan.weather.data.SingleWeatherInfo
+import koslin.jan.weather.data.WeatherInfoWithUnits
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -52,9 +53,10 @@ class WeatherViewModel(
     val uiState: LiveData<WeatherUiState>
         get() = _uiState
 
-    private val listType =
-        Types.newParameterizedType(List::class.java, SingleWeatherInfo::class.java)
-    private val jsonAdapter: JsonAdapter<List<SingleWeatherInfo>> = moshi.adapter(listType)
+    private val listType = Types.newParameterizedType(List::class.java, SingleWeatherInfo::class.java)
+    private val weatherInfoAdapter: JsonAdapter<List<SingleWeatherInfo>> = moshi.adapter(listType)
+    private val jsonAdapter: JsonAdapter<WeatherInfoWithUnits> = moshi.adapter(
+        WeatherInfoWithUnits::class.java)
 
     private val geocoder = Geocoder(application)
     private val connectivityManager =
@@ -106,7 +108,7 @@ class WeatherViewModel(
 
     }
 
-    private fun saveWeatherDataToFile(weatherInfo: List<SingleWeatherInfo>, cityName: String) {
+    private fun saveWeatherDataToFile(weatherInfo: WeatherInfoWithUnits, cityName: String) {
         try {
             val json = jsonAdapter.toJson(weatherInfo)
             val fileName = "$cityName.json"
@@ -118,17 +120,14 @@ class WeatherViewModel(
         }
     }
 
-    private fun loadWeatherDataFromFile(cityName: String): List<SingleWeatherInfo>? {
+    private fun loadWeatherDataFromFile(cityName: String): WeatherInfoWithUnits? {
         return try {
             val fileName = "$cityName.json"
-            Log.d("FILEREAD", "INSIDE " + fileName)
             val file = File(application.filesDir, fileName)
             if (file.exists()) {
-                Log.d("FILEREAD", "exists")
                 val json = file.readText()
                 jsonAdapter.fromJson(json)
             } else {
-                Log.d("FILEREAD", "not existing")
                 null
             }
         } catch (e: IOException) {
@@ -148,9 +147,9 @@ class WeatherViewModel(
                     if (weatherInfoFromFile != null) {
                         withContext(Dispatchers.Main) {
                             _uiState.value = WeatherUiState.Success(
-                                weatherInfoFromFile,
-                                temperatureUnit,
-                                windSpeedUnit
+                                weatherInfoFromFile.weatherInfo,
+                                weatherInfoFromFile.temperatureUnit,
+                                weatherInfoFromFile.windSpeedUnit
                             )
                         }
                     } else {
@@ -192,7 +191,7 @@ class WeatherViewModel(
                             _uiState.value =
                                 WeatherUiState.Success(weatherInfo, temperatureUnit, windSpeedUnit)
                         }
-                        saveWeatherDataToFile(weatherInfo, locationData.cityName)
+                        saveWeatherDataToFile(WeatherInfoWithUnits(weatherInfo, temperatureUnit, windSpeedUnit), locationData.cityName)
                     } else {
                         withContext(Dispatchers.Main) {
                             _uiState.value = WeatherUiState.Loading
@@ -201,9 +200,9 @@ class WeatherViewModel(
                         if (weatherInfoFromFile != null) {
                             withContext(Dispatchers.Main) {
                                 _uiState.value = WeatherUiState.Success(
-                                    weatherInfoFromFile,
-                                    temperatureUnit,
-                                    windSpeedUnit
+                                    weatherInfoFromFile.weatherInfo,
+                                    weatherInfoFromFile.temperatureUnit,
+                                    weatherInfoFromFile.windSpeedUnit
                                 )
                             }
                         } else {
