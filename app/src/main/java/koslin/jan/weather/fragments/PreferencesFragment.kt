@@ -37,6 +37,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
                 weatherViewModel.updateWindSpeedUnit()
                 weatherViewModel.updateTemperatureUnit()
                 weatherViewModel.getWeatherData()
+                oldValueMap[key!!] = sharedPreferences.all[key]
             } else {
                 // If there's no internet connection, notify the user and revert preference change
                 if(isFirstTime){
