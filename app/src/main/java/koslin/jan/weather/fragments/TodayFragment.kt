@@ -37,6 +37,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
     private lateinit var searchButton: Button
     private lateinit var showButton: Button
     private lateinit var addToFavButton: Button
+    private lateinit var refreshButton: Button
     private lateinit var loadingProgressBar: ProgressBar
 
     private lateinit var recyclerView: RecyclerView
@@ -51,6 +52,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
         searchButton = view.findViewById(R.id.buttonSearch)
         showButton = view.findViewById(R.id.showButton)
         addToFavButton = view.findViewById(R.id.addToFavButton)
+        refreshButton = view.findViewById(R.id.refreshButton)
         loadingProgressBar = view.findViewById(R.id.loadingProgressBar)
 
         recyclerView = view.findViewById(R.id.weatherRecyclerView)
@@ -83,6 +85,10 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
 
         addToFavButton.setOnClickListener {
             weatherViewModel.addToFavorites()
+        }
+
+        refreshButton.setOnClickListener {
+            weatherViewModel.refresh()
         }
     }
 

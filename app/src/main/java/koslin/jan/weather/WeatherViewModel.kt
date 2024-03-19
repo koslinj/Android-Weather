@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Geocoder
 import android.net.ConnectivityManager
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -101,7 +102,6 @@ class WeatherViewModel(
                 // Handle no results or error
             }
         } else {
-            Log.d("FILEREAD", "BEFORE " + cityName)
             getWeatherFromFile(cityName)
             locationData.cityName = cityName
         }
@@ -226,6 +226,9 @@ class WeatherViewModel(
 
     init {
         getWeatherData()
+        if(!isNetworkAvailable()){
+            Toast.makeText(application, "No internet, loading from a file", Toast.LENGTH_SHORT).show()
+        }
         _defaultCity.value = locationData.cityName
     }
 
@@ -235,6 +238,15 @@ class WeatherViewModel(
             ?.toMutableSet() ?: mutableSetOf()
         favoritesSet.add(currentCity)
         customPreferences.edit().putStringSet(Keys.FAVOURITE_CITIES_KEY, favoritesSet).apply()
+    }
+
+    fun refresh() {
+        if(isNetworkAvailable()){
+            getWeatherData()
+        }
+        else{
+            Toast.makeText(application, "No internet, can't download fresh weather data", Toast.LENGTH_LONG).show()
+        }
     }
 
     // Function to update location data
