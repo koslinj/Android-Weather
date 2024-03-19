@@ -59,6 +59,7 @@ class WeeklyWeatherAdapter(
             val onlyHour = weatherGroup[i].time.subSequence(len - 5, len)
             val temperature = weatherGroup[i].temperature
             val rain = weatherGroup[i].rain
+            val cloud = weatherGroup[i].cloudPercentage ?: 0
             val formattedTemperature = if (temperatureUnit == "celsius") {
                 String.format("%.1f°C", temperature)
             } else {
@@ -69,13 +70,13 @@ class WeeklyWeatherAdapter(
             // Set data to corresponding views based on slot number
             when (i) {
                 0 -> {
-                    setProperViews(holder.views1, holder.img1, onlyHour, formattedTemperature, formattedRain, rain)
+                    setProperViews(holder.views1, holder.img1, onlyHour, formattedTemperature, formattedRain, rain, cloud)
                 }
                 1 -> {
-                    setProperViews(holder.views2, holder.img2, onlyHour, formattedTemperature, formattedRain, rain)
+                    setProperViews(holder.views2, holder.img2, onlyHour, formattedTemperature, formattedRain, rain, cloud)
                 }
                 2 -> {
-                    setProperViews(holder.views3, holder.img3, onlyHour, formattedTemperature, formattedRain, rain)
+                    setProperViews(holder.views3, holder.img3, onlyHour, formattedTemperature, formattedRain, rain, cloud)
                 }
             }
         }
@@ -87,7 +88,8 @@ class WeeklyWeatherAdapter(
         onlyHour: CharSequence,
         formattedTemperature: String,
         formattedRain: String,
-        rain: Double
+        rain: Double,
+        cloud: Int
     ) {
         views[0].text = onlyHour
         views[1].text = formattedTemperature
@@ -95,7 +97,13 @@ class WeeklyWeatherAdapter(
         if (rain > 0) {
             img.setImageResource(R.drawable.rain_icon)
         } else {
-            img.setImageResource(R.drawable.sun_icon)
+            if(cloud < 40){
+                img.setImageResource(R.drawable.sun_icon)
+            } else if (cloud < 80) {
+                img.setImageResource(R.drawable.bit_cloudy_icon)
+            } else {
+                img.setImageResource(R.drawable.cloudy_icon)
+            }
         }
     }
 

@@ -56,11 +56,11 @@ class WeekFragment : Fragment(R.layout.fragment_week) {
 
                     for (item in weatherInfo){
                         if(item.time.subSequence(timeLen-5, timeLen) == "10:00"){
-                            group.add(SingleWeatherInfo(item.time, item.temperature, item.rain))
+                            group.add(SingleWeatherInfo(item.time, item.temperature, item.rain, cloudPercentage = item.cloudPercentage))
                         } else if(item.time.subSequence(timeLen-5, timeLen) == "15:00"){
-                            group.add(SingleWeatherInfo(item.time, item.temperature, item.rain))
+                            group.add(SingleWeatherInfo(item.time, item.temperature, item.rain, cloudPercentage = item.cloudPercentage))
                         } else if(item.time.subSequence(timeLen-5, timeLen) == "20:00"){
-                            group.add(SingleWeatherInfo(item.time, item.temperature, item.rain))
+                            group.add(SingleWeatherInfo(item.time, item.temperature, item.rain, cloudPercentage = item.cloudPercentage))
                             groupedWeatherInfo.add(group)
                             group = mutableListOf()
                         }
