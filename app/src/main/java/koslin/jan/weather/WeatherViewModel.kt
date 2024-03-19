@@ -186,7 +186,9 @@ class WeatherViewModel(
                                 res.weatherData.time[index],
                                 res.weatherData.temperature[index],
                                 res.weatherData.rain[index],
-                                res.weatherData.windSpeed[index]
+                                res.weatherData.windSpeed[index],
+                                res.weatherData.pressure[index],
+                                res.weatherData.cloudPercentage[index]
                             )
                         }
                         withContext(Dispatchers.Main) {

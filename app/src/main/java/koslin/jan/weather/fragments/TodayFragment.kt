@@ -119,7 +119,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
                         val endIndex = startIndex + 24
 
                         val slicedWeatherInfo = weatherInfo.subList(startIndex, endIndex)
-                        slicedWeatherInfo.map { SingleWeatherInfo(it.time, it.temperature, it.rain, it.windSpeed) }
+                        slicedWeatherInfo.map { SingleWeatherInfo(it.time, it.temperature, it.rain, it.windSpeed, it.pressure, it.cloudPercentage) }
                     } ?: emptyList()
 
                     withContext(Dispatchers.Main) {

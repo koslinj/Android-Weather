@@ -21,6 +21,8 @@ class WeatherAdapter(
         val temperatureTextView: TextView = itemView.findViewById(R.id.temperatureTextView)
         val rainTextView: TextView = itemView.findViewById(R.id.rainTextView)
         val windSpeedTextView: TextView = itemView.findViewById(R.id.windSpeedTextView)
+        val cloudPercentageTextView: TextView = itemView.findViewById(R.id.cloudPercentageTextView)
+        val pressureTextView: TextView = itemView.findViewById(R.id.pressureTextView)
         val weatherIconImageView: ImageView = itemView.findViewById(R.id.weatherIconImageView)
         val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
     }
@@ -65,17 +67,28 @@ class WeatherAdapter(
             else -> String.format("%.1f Mph", weatherInfo[position].windSpeed)
         }
         val formattedRain = String.format("%.1fmm", weatherInfo[position].rain)
+        val formattedPressure = String.format("%.0f hPa", weatherInfo[position].pressure)
+        val formattedCloudPercentage = weatherInfo[position].cloudPercentage.toString() + " %"
 
         holder.temperatureTextView.text = formattedTemperature
         holder.rainTextView.text = formattedRain
         holder.windSpeedTextView.text = formattedWindSpeed
+        holder.pressureTextView.text = formattedPressure
+        holder.cloudPercentageTextView.text = formattedCloudPercentage
 
         // Set weather icons based on rain conditions (for example)
         val rainAmount = weatherInfo[position].rain
+        val cloudAmount = weatherInfo[position].cloudPercentage ?: 0
         if (rainAmount > 0) {
             holder.weatherIconImageView.setImageResource(R.drawable.rain_icon)
         } else {
-            holder.weatherIconImageView.setImageResource(R.drawable.sun_icon)
+            if(cloudAmount < 35){
+                holder.weatherIconImageView.setImageResource(R.drawable.sun_icon)
+            } else if (cloudAmount < 75) {
+                holder.weatherIconImageView.setImageResource(R.drawable.bit_cloudy_icon)
+            } else {
+                holder.weatherIconImageView.setImageResource(R.drawable.cloudy_icon)
+            }
         }
     }
 
