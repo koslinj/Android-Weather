@@ -5,6 +5,8 @@ import android.content.Context
 import android.location.Geocoder
 import android.net.ConnectivityManager
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -224,10 +226,23 @@ class WeatherViewModel(
         return networkInfo != null && networkInfo.isConnected
     }
 
+    fun showCustomToast(context: Context, message: String) {
+        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val layout = inflater.inflate(R.layout.custom_toast_layout, null)
+
+        val textView = layout.findViewById<TextView>(R.id.toast_message)
+        textView.text = message
+
+        val toast = Toast(context)
+        toast.duration = Toast.LENGTH_LONG
+        toast.view = layout
+        toast.show()
+    }
+
     init {
         getWeatherData()
         if(!isNetworkAvailable()){
-            Toast.makeText(application, "No internet, loading from a file", Toast.LENGTH_SHORT).show()
+            showCustomToast(application, "No internet, loading from a file")
         }
         _defaultCity.value = locationData.cityName
     }
@@ -245,7 +260,7 @@ class WeatherViewModel(
             getWeatherData()
         }
         else{
-            Toast.makeText(application, "No internet, can't download fresh weather data", Toast.LENGTH_LONG).show()
+            showCustomToast(application, "No internet, can't download fresh weather data")
         }
     }
 
