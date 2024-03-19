@@ -30,10 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import kotlin.math.abs
 
 sealed interface WeatherUiState {
     data class Success(
@@ -226,7 +222,8 @@ class WeatherViewModel(
         return networkInfo != null && networkInfo.isConnected
     }
 
-    fun showCustomToast(context: Context, message: String) {
+    fun showCustomToast(context: Context, messageId: Int) {
+        val message = context.getString(messageId)
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val layout = inflater.inflate(R.layout.custom_toast_layout, null)
 
@@ -242,7 +239,7 @@ class WeatherViewModel(
     init {
         getWeatherData()
         if(!isNetworkAvailable()){
-            showCustomToast(application, "No internet, loading from a file")
+            showCustomToast(application, R.string.no_internet_initial)
         }
         _defaultCity.value = locationData.cityName
     }
@@ -260,7 +257,7 @@ class WeatherViewModel(
             getWeatherData()
         }
         else{
-            showCustomToast(application, "No internet, can't download fresh weather data")
+            showCustomToast(application, R.string.no_internet_refresh)
         }
     }
 
