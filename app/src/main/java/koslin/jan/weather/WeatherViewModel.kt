@@ -6,8 +6,11 @@ import android.location.Geocoder
 import android.net.ConnectivityManager
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,6 +24,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import koslin.jan.weather.config.Keys
+import koslin.jan.weather.config.ToastType
 import koslin.jan.weather.data.LocationData
 import koslin.jan.weather.data.Repository
 import koslin.jan.weather.data.SingleWeatherInfo
@@ -222,13 +226,26 @@ class WeatherViewModel(
         return networkInfo != null && networkInfo.isConnected
     }
 
-    fun showCustomToast(context: Context, messageId: Int) {
+    fun showCustomToast(context: Context, messageId: Int, type: ToastType) {
         val message = context.getString(messageId)
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val layout = inflater.inflate(R.layout.custom_toast_layout, null)
 
         val textView = layout.findViewById<TextView>(R.id.toast_message)
+        val imageView = layout.findViewById<ImageView>(R.id.toast_icon)
+        val container = layout.findViewById<LinearLayout>(R.id.custom_toast_container)
         textView.text = message
+
+        when(type){
+            ToastType.INTERNET -> {}
+            ToastType.DEFAULT_CITY -> {
+                container.setBackgroundResource(R.drawable.other_toast_background)
+                imageView.setImageResource(R.drawable.notification_icon)
+            }
+            ToastType.FAVOURITE -> {
+
+            }
+        }
 
         val toast = Toast(context)
         toast.duration = Toast.LENGTH_LONG
@@ -239,7 +256,7 @@ class WeatherViewModel(
     init {
         getWeatherData()
         if(!isNetworkAvailable()){
-            showCustomToast(application, R.string.no_internet_initial)
+            showCustomToast(application, R.string.no_internet_initial, ToastType.INTERNET)
         }
         _defaultCity.value = locationData.cityName
     }
@@ -257,7 +274,7 @@ class WeatherViewModel(
             getWeatherData()
         }
         else{
-            showCustomToast(application, R.string.no_internet_refresh)
+            showCustomToast(application, R.string.no_internet_refresh, ToastType.INTERNET)
         }
     }
 

@@ -11,6 +11,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import koslin.jan.weather.R
 import koslin.jan.weather.WeatherViewModel
+import koslin.jan.weather.config.ToastType
 import koslin.jan.weather.data.LocationData
 
 class PreferencesFragment : PreferenceFragmentCompat() {
@@ -41,7 +42,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
             } else {
                 // If there's no internet connection, notify the user and revert preference change
                 if(isFirstTime){
-                    weatherViewModel.showCustomToast(requireContext(), R.string.no_internet_prefs)
+                    weatherViewModel.showCustomToast(requireContext(), R.string.no_internet_prefs, ToastType.INTERNET)
                     isFirstTime = false
                 } else {
                     isFirstTime = true

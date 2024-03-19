@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import koslin.jan.weather.R
 import koslin.jan.weather.WeatherViewModel
+import koslin.jan.weather.config.ToastType
 import koslin.jan.weather.data.LocationData
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
@@ -40,7 +41,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         saveButton.setOnClickListener {
             val defaultCity = defaultCityEditText.text.toString()
             weatherViewModel.handleSearch(defaultCity, true)
-            Toast.makeText(requireContext(), "Default city saved", Toast.LENGTH_SHORT).show()
+            weatherViewModel.showCustomToast(requireContext(),R.string.default_city_saved, ToastType.DEFAULT_CITY)
         }
 
         val preferencesFragmentContainer = view.findViewById<FragmentContainerView>(R.id.preferencesFragmentContainer)
