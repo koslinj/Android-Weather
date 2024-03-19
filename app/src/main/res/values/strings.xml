@@ -18,4 +18,5 @@
     <string name="favourite">Favourite</string>
     <string name="no_internet_initial">No Internet, loading from a file</string>
     <string name="no_internet_refresh">No Internet, unable to refresh the weather</string>
+    <string name="no_internet_prefs">No internet, preferences cannot be changed.</string>
 </resources>

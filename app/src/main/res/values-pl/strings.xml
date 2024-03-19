@@ -19,4 +19,5 @@
     <string name="favourite">Ulubione</string>
     <string name="no_internet_initial">Brak Internetu, pobieranie pogody z pliku</string>
     <string name="no_internet_refresh">Brak Internetu, nie można odświeżyć pogody</string>
+    <string name="no_internet_prefs">Brak Internetu, nie można zmienić preferencji</string>
 </resources>

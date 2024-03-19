@@ -41,7 +41,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
             } else {
                 // If there's no internet connection, notify the user and revert preference change
                 if(isFirstTime){
-                    Toast.makeText(requireContext(), "No internet connection. Preferences cannot be changed.", Toast.LENGTH_SHORT).show()
+                    weatherViewModel.showCustomToast(requireContext(), R.string.no_internet_prefs)
                     isFirstTime = false
                 } else {
                     isFirstTime = true
