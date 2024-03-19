@@ -82,9 +82,9 @@ class WeatherAdapter(
         if (rainAmount > 0) {
             holder.weatherIconImageView.setImageResource(R.drawable.rain_icon)
         } else {
-            if(cloudAmount < 35){
+            if(cloudAmount < 40){
                 holder.weatherIconImageView.setImageResource(R.drawable.sun_icon)
-            } else if (cloudAmount < 75) {
+            } else if (cloudAmount < 80) {
                 holder.weatherIconImageView.setImageResource(R.drawable.bit_cloudy_icon)
             } else {
                 holder.weatherIconImageView.setImageResource(R.drawable.cloudy_icon)
