@@ -19,6 +19,7 @@ import koslin.jan.weather.ModalBottomSheet
 import koslin.jan.weather.R
 import koslin.jan.weather.WeatherUiState
 import koslin.jan.weather.WeatherViewModel
+import koslin.jan.weather.config.ToastType
 import koslin.jan.weather.data.LocationData
 import koslin.jan.weather.data.SingleWeatherInfo
 import kotlinx.coroutines.CoroutineScope
@@ -85,6 +86,7 @@ class TodayFragment : Fragment(R.layout.fragment_today) {
 
         addToFavButton.setOnClickListener {
             weatherViewModel.addToFavorites()
+            weatherViewModel.showCustomToast(requireContext(), R.string.favourite_add, ToastType.FAVOURITE)
         }
 
         refreshButton.setOnClickListener {

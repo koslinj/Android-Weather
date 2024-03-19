@@ -236,19 +236,23 @@ class WeatherViewModel(
         val container = layout.findViewById<LinearLayout>(R.id.custom_toast_container)
         textView.text = message
 
+        val toast = Toast(context)
         when(type){
-            ToastType.INTERNET -> {}
+            ToastType.INTERNET -> {
+                toast.duration = Toast.LENGTH_LONG
+            }
             ToastType.DEFAULT_CITY -> {
                 container.setBackgroundResource(R.drawable.other_toast_background)
                 imageView.setImageResource(R.drawable.notification_icon)
+                toast.duration = Toast.LENGTH_SHORT
             }
             ToastType.FAVOURITE -> {
-
+                container.setBackgroundResource(R.drawable.other_toast_background)
+                imageView.setImageResource(R.drawable.heart_icon)
+                toast.duration = Toast.LENGTH_SHORT
             }
         }
 
-        val toast = Toast(context)
-        toast.duration = Toast.LENGTH_LONG
         toast.view = layout
         toast.show()
     }

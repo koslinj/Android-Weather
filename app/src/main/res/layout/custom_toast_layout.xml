@@ -18,7 +18,7 @@
         android:src="@drawable/no_wifi_icon" />
 
     <TextView
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="16sp"
         android:id="@+id/toast_message"
         android:layout_width="wrap_content"

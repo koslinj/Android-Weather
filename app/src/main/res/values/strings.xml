@@ -17,6 +17,7 @@
     <string name="weekly_tab">WEEKLY</string>
     <string name="enter_city">Enter city name...</string>
     <string name="favourite">Favourite</string>
+    <string name="favourite_add">Added to favourites!</string>
     <string name="no_internet_initial">No Internet, loading from a file</string>
     <string name="no_internet_refresh">No Internet, unable to refresh the weather</string>
     <string name="no_internet_prefs">No internet, preferences cannot be changed.</string>
