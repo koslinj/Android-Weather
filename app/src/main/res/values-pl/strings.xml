@@ -9,7 +9,7 @@
     <!-- Messages Preferences -->
     <string name="temperature_unit_title">Temperatura</string>
     <string name="wind_unit_title">Prędkość wiatru</string>
-    <string name="settings">Ustawienia</string>
+    <string name="default_city_prefix">Domyślne miasto: </string>
     <string name="default_city">Domyślne miasto...</string>
     <string name="search">Szukaj</string>
     <string name="settings_tab">USTAWIENIA</string>

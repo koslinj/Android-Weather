@@ -31,8 +31,10 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         saveButton = view.findViewById(R.id.buttonSaveDefaultCity)
         textViewDefaultCity = view.findViewById(R.id.textViewDefaultCity)
 
+        val defaultCityPrefix = resources.getString(R.string.default_city_prefix)
         weatherViewModel.defaultCity.observe(viewLifecycleOwner) { city ->
-            textViewDefaultCity.text = city
+            val concatenatedCity = "$defaultCityPrefix $city"
+            textViewDefaultCity.text = concatenatedCity
         }
 
         saveButton.setOnClickListener {
